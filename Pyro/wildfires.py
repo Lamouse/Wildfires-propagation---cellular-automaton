@@ -100,52 +100,60 @@ class WildFires(simcx.Simulator):
                     if self.wind == 0:
                         if y+1 < self.grid_height:
                             if self.values[y+1][x].kind == 1 and np.random.random() < prob_inflame:
-                                temp_values[y+1][x] = Area(2, prob_inflame)
-                                # high probability
+                                temp_values[y+1][x].kind = 2
+                                temp_values[y+1][x].prob_inflame = prob_inflame
                             '''if x+1 < self.grid_width and self.values[y+1][x+1] >= 2:
                                 cont += 1
                             if x-1 >= 0 and self.values[y+1][x-1] >= 2:
                                 cont += 1'''
                         if y-1 >= 0:
                             if self.values[y-1][x].kind == 1 and np.random.random() < prob_inflame:
-                                temp_values[y-1][x] = Area(2, prob_inflame)
-                                # low probability
+                                temp_values[y-1][x].kind = 2
+                                temp_values[y-1][x].prob_inflame = prob_inflame
                             '''if x+1 < self.grid_width and self.values[y-1][x+1] >= 2:
                                 cont += 1
                             if x-1 >= 0 and self.values[y-1][x-1] >= 2:
                                 cont += 1'''
                         if x+1 < self.grid_width and self.values[y][x+1].kind == 1 and np.random.random() < prob_inflame:
-                            temp_values[y][x+1] = Area(2, prob_inflame)
-                            # high probability
+                            temp_values[y][x+1].kind = 2
+                            temp_values[y][x+1].prob_inflame = prob_inflame
                         if x-1 >= 0 and self.values[y][x-1].kind == 1 and np.random.random() < prob_inflame:
-                            temp_values[y][x-1] = Area(2, prob_inflame)
-                            # low probability
+                            temp_values[y][x-1].kind = 2
+                            temp_values[y][x-1].prob_inflame = prob_inflame
 
                     else:
                         if y+1 < self.grid_height:
                             if self.values[y+1][x].kind == 1 and np.random.random() < prob_inflame:
-                                temp_values[y+1][x] = Area(2, prob_inflame)
                                 # high probability
+                                temp_values[y+1][x].kind = 2
+                                temp_values[y+1][x].prob_inflame = prob_inflame
                         if y-1 >= 0:
                             if self.values[y-1][x].kind == 1 and np.random.random() < prob_inflame:
-                                temp_values[y-1][x] = Area(2, prob_inflame*self.prob_decrease)
                                 # low probability
+                                temp_values[y-1][x].kind = 2
+                                temp_values[y-1][x].prob_inflame = prob_inflame*self.prob_decrease
                         if x+1 < self.grid_width and self.values[y][x+1].kind == 1 and np.random.random() < prob_inflame:
-                            temp_values[y][x+1] = Area(2, prob_inflame)
                             # high probability
+                            temp_values[y][x+1].kind = 2
+                            temp_values[y][x+1].prob_inflame = prob_inflame
                         if x-1 >= 0 and self.values[y][x-1].kind == 1 and np.random.random() < prob_inflame:
-                            temp_values[y][x-1] = Area(2, prob_inflame*self.prob_decrease)
                             # low probability
+                            temp_values[y][x-1].kind = 2
+                            temp_values[y][x-1].prob_inflame = prob_inflame*self.prob_decrease
                         if self.wind == 2:
                             if y+1 < self.grid_height:
                                 if x+1 < self.grid_width:
                                     if self.values[y+1][x+1].kind == 1 and np.random.random() < prob_inflame:
-                                        temp_values[y+1][x+1] = Area(2, prob_inflame)
+                                        temp_values[y+1][x+1].kind = 2
+                                        temp_values[y+1][x+1].prob_inflame = prob_inflame
                                     if x+2 < self.grid_width and self.values[y+1][x+2].kind == 1 and np.random.random() < prob_inflame:
-                                        temp_values[y+1][x+2] = Area(2, prob_inflame)
+                                        temp_values[y+1][x+2].kind = 2
+                                        temp_values[y+1][x+2].prob_inflame = prob_inflame
                             if x+1 < self.grid_width:
                                 if y+2 < self.grid_height and self.values[y+2][x+1].kind == 1 and np.random.random() < prob_inflame:
-                                    temp_values[y+2][x+1] = Area(2, prob_inflame)
+                                    temp_values[y+2][x+1].kind = 2
+                                    temp_values[y+2][x+1].prob_inflame = prob_inflame
+
                     temp_values[y][x].kind += 1
                     if temp_values[y][x].kind >= 2 + self.gene_burn:
                         temp_values[y][x].kind = -self.gene_burned
@@ -188,7 +196,7 @@ if __name__ == '__main__':
     np.random.seed(911+112)
 
     #gol = WildFires(150, 75, 10, 0.8, 0.01, 5, 25, True, False)
-    gol = WildFires(150, 75, 10, 0.8, 0.01, 0.8, 5, 50, 1, False)
+    gol = WildFires(150, 75, 10, 0.8, 0.01, 0.8, 5, 50, 2, False)
     gol.random(0.8)
 
     display = simcx.Display(interval=0.2)
