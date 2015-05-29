@@ -47,6 +47,11 @@ class WildFires(simcx.Simulator):
         self.gene_burned = gene_burned
         self.wind = wind
         self.repeat = repeat
+        self.first = True
+        self.burned_area = 0
+        self.survived_area = 0
+        self.count_iteration = 0
+        self.number_obstacles = 0
 
         # create graphics objects
         self.batch = pyglet.graphics.Batch()
@@ -68,7 +73,12 @@ class WildFires(simcx.Simulator):
         for y in range(self.grid_height):
             temp = []
             for x in range(self.grid_width):
-                temp.append(Area(np.random.choice((0, 1), p=(1 - prob, prob)), self.prob_inflame))
+                kind = np.random.choice((0, 1), p=(1 - prob, prob))
+                temp.append(Area(kind, self.prob_inflame))
+                if kind:
+                    self.survived_area += 1
+                else:
+                    self.number_obstacles += 1
             self.values.append(temp)
 
         y = np.random.randint(0, self.grid_height)
@@ -76,6 +86,7 @@ class WildFires(simcx.Simulator):
         self.values[y][x].kind = 2
 
         self._update_graphics()
+
 
 
     def add_block(self, block, pos_x, pos_y):
@@ -87,7 +98,7 @@ class WildFires(simcx.Simulator):
 
         self._update_graphics()
 
-    def step(self):
+    def step(self, dt=None):
         temp = 0
         temp_values = deepcopy(self.values)
 
@@ -156,18 +167,28 @@ class WildFires(simcx.Simulator):
 
                     temp_values[y][x].kind += 1
                     if temp_values[y][x].kind >= 2 + self.gene_burn:
-                        temp_values[y][x].kind = -self.gene_burned
+                        if self.first:
+                            temp_values[y][x].kind = -999
+                            self.first = False
+                        else:
+                            temp_values[y][x].kind = -self.gene_burned
+                        self.burned_area += 1
+                        self.survived_area -= 1
                     temp = 1
 
-                if self.prob_reborn > 0:
+                if self.prob_reborn > 0 and self.values[y][x].kind != -999:
                     if self.values[y][x].kind < 0:
                         temp_values[y][x].kind += 1
 
                     elif self.values[y][x].kind == 0:
                         if np.random.random() < self.prob_reborn:
                             temp_values[y][x].kind = 1
+                            self.survived_area += 1
 
         self.values = temp_values
+        if temp:
+            self.count_iteration += 1
+
         if self.repeat and temp == 0:
             y = np.random.randint(0, self.grid_height)
             x = np.random.randint(0, self.grid_width)
@@ -188,17 +209,28 @@ class WildFires(simcx.Simulator):
                     self.grid[y][x].colors[:] = WildFires.QUAD_BROWN
                 elif self.values[y][x].kind >= 2:
                     self.grid[y][x].colors[:] = WildFires.QUAD_RED
+                elif self.values[y][x].kind == -999:
+                    self.grid[y][x].colors[:] = WildFires.QUAD_WHITE
                 else:
                     self.grid[y][x].colors[:] = WildFires.QUAD_BLACK
 
 
 if __name__ == '__main__':
+    # np.random.seed(911+112)
+    # gol = WildFires(150, 75, 10, 0.8, 0.01, 0.8, 5, 50, 2, False)
+    # gol = WildFires(150, 75, 10, 0.8, 0, 0.8, 5, 50, 2, False)
+    # gol.random(0.8)
+
     np.random.seed(911+112)
+    gol = WildFires(250, 150, 5, 0.8, 0, 0.8, 5, 50, 2, False)
+    gol.random(0.7)
 
-    #gol = WildFires(150, 75, 10, 0.8, 0.01, 5, 25, True, False)
-    gol = WildFires(150, 75, 10, 0.8, 0.01, 0.8, 5, 50, 2, False)
-    gol.random(0.8)
-
-    display = simcx.Display(interval=0.2)
+    display = simcx.Display(interval=0.01)
     display.add_simulator(gol)
     simcx.run()
+
+    print("NUMBER OF INTERACTIONS: ", gol.count_iteration)
+    print("NUMBER OF OBSTACLES: ", gol.number_obstacles)
+    print("SURVIVED FOREST: ", gol.survived_area)
+    print("BURNED FOREST: ", gol.burned_area)
+
