@@ -250,8 +250,8 @@ class WildFires(simcx.Simulator):
             self.values[y][x].kind = 2
             self.values[y][x].prob_inflame = self.prob_inflame
 
-        #if temp == 0 and not self.repeat and (self.burned_area == 1 or self.prob_reborn == 0):
-        #    self.display.close()
+        if (temp == 0 and not self.repeat and (self.burned_area == 1 or self.prob_reborn == 0)) or (self.repeat and self.count_iteration == 1000):
+            self.display.close()
 
         self._update_graphics()
 
@@ -280,7 +280,7 @@ if __name__ == '__main__':
     # gol.random(0.8)
 
     list_of_kinds = [0, 1, 2]
-    list_of_regenerate = [0]
+    list_of_regenerate = [0.005]
 
     # default case
     '''np.random.seed(911 + 112)
@@ -310,7 +310,7 @@ if __name__ == '__main__':
     for kind in list_of_kinds:
         for regenerate in list_of_regenerate:
             np.random.seed(911 + 112)
-            gol = WildFires(250, 150, 5, 0.8, regenerate, 0.8, 3, 10, kind, False)
+            gol = WildFires(250, 150, 5, 0.8, regenerate, 0.8, 3, 10, kind, True)
             gol.random(0.7)
 
             display = simcx.Display(interval=0.01)
